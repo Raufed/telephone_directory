@@ -1,0 +1,157 @@
+﻿@model IEnumerable<MVC_TelephoneData.Models.TelephoneModel>
+
+@{
+    ViewBag.Title = "Index";
+
+    string toHrefParams(string key, string value)
+    {
+        string result = "?";
+        ICollection<string> keys = ViewData.Keys;
+        foreach (var ViewDataKey in keys)
+        {
+            if (key == ViewDataKey)
+            {
+                result += $"&{key}={value}";
+            }
+            else
+            {
+                result += $"&{ViewDataKey}={ViewData[ViewDataKey]}";
+            }
+        }
+        return result;
+    }
+}
+<central>
+    <h1>Телефонный справочник</h1>
+
+    <form asp-action="Index" method="get" id="searchForm">
+        <div class="form-group">
+            <label for="SearchString">Поиск по ФИО</label>
+
+            <br />
+            <input type="text" name="SName"
+                   value="" />
+            <br />
+            <input type="text" name="FName"
+                   value="" />
+            <br />
+            <input type="text" name="patron"
+                   value="" />
+            <br />
+            <h4>Сортировка</h4>
+            <select name="Sort">
+                <option value="0">А-Я</option>
+                <option value="1">Я-А</option>
+            </select>
+            <!--input type="hidden" name="Limit" value="@Html.ViewData["Limit"]" /-->
+            <!--input type="hidden" name="Page" value="@Html.ViewData["Page"]" /-->
+            <br />
+            <h4>Фильтры</h4>
+            <select name="Organstring">
+                @{
+                    string organs = "";
+                    var empry = "";
+                    organs += $"<option value=\"{empry}\">{empry}</option>";
+
+                    List<string> o = (List<string>)ViewData["organs"];
+                    foreach (var item in o)
+                    {
+                        organs += $"<option value=\"{item}\">{item}</option>";
+                    }
+                }
+                @Html.Raw(organs);
+            </select>
+            <select name="Poststring">
+                @{
+                    string posts = "";
+                    posts += $"<option value=\"{empry}\">{empry}</option>";
+
+                    List<string> p = (List<string>)ViewData["posts"];
+                    foreach (var item in p)
+                    {
+                        posts += $"<option value=\"{item}\">{item}</option>";
+                    }
+                    
+                }
+                @Html.Raw(posts);
+            </select>
+            <input type="submit" value="Search" class="btn btn-primary" />
+        </div>
+    <form asp-action="Index" method="get">
+        <div class="form-group">
+            <label for="SearchString">Количество строк на странице</label>
+            <input type="text" name="Limit"
+                   value="@Html.ViewData["Limit"]" />
+            @*<input type="text" name="Page"
+                   value="@Html.ViewData["Page"]" />*@
+            <input type="submit" value="PAGE" class="btn btn-primary" />
+        </div>
+    </form>
+    </form>
+    <table class="table">
+        <tr>
+            <th> Фамилия </th>
+            <th> Имя </th>
+            <th> Отчество </th>
+            <th> Организация </th>
+            <th> Должность </th>
+            <th> Код выхода </th>
+            <th> Телефон </th>
+            <th> Длинный Телефон </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.secondname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.firstname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.patronymic)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.orgname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.postname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.code)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.telephone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.longtelephone)
+                </td>
+
+            </tr>
+        }
+
+    @{ 
+        var pageBar = "";
+        for (int i = 0; i < Convert.ToInt32(ViewData["PageCount"]); i++)
+        {
+            if ((i+1).ToString() != ViewData["Page"].ToString())
+            {
+
+                pageBar += $"<li class=\"page - item\"><a class=\"page - link\" href=\"{toHrefParams("Page", (i+1).ToString())}\" >{i+1}</a></li>";
+            }
+            else
+            {
+                pageBar += $"<li class=\"page-item active\"><a class=\"page - link\" href=\"\">{i + 1}</a></li>";
+            }
+        }
+    }
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            @Html.Raw(pageBar)
+        </ul>
+    </nav>
+
+    </table>
+</central>
